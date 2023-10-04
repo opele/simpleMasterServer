@@ -17,7 +17,7 @@ public class Main {
 
         ByteBuffer ips = ByteBuffer.allocate(1048576 * 5); // 5mb
 
-        SortedSet<String> lastChallenges = new TreeSet<>();
+        SortedSet<Integer> lastChallenges = new TreeSet<>();
 
         byte[] footer = new byte[] {(byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0};
 
@@ -51,16 +51,17 @@ public class Main {
                 if (lastChallenges.size() > 100) {
                     lastChallenges.removeLast();
                 }
-                lastChallenges.add("" + challenge);
+                lastChallenges.add(challenge);
 
-                joinResponse.put(6, ByteBuffer.allocate(4).putInt(challenge), 0, 4);
+                joinResponse.putInt(6, challenge);
 
                 InetAddress address = packet.getAddress();
                 int remotePort = packet.getPort();
 
-                byte[] resp = joinResponse.array();
+                byte[] resp = joinResponse.array().clone();
                 packet = new DatagramPacket(resp, resp.length, address, remotePort);
                 socket.send(packet);
+
 
             } else if (packet.getLength() > 7 && packet.getData()[0] == 0x31) {
                 System.out.println("Received ip list query");
@@ -80,17 +81,19 @@ public class Main {
                 if (requestStr.startsWith("0\n\\protocol\\")) {
 
                     System.out.println("Received challenge response");
-                    int idxChallengeStart = requestStr.indexOf("\\challenge\\") + 1;
+                    String challengePrefix = "\\challenge\\";
+                    int idxChallengeStart = requestStr.indexOf(challengePrefix) + challengePrefix.length();
 
-                    if (idxChallengeStart > 1) {
+                    if (idxChallengeStart > challengePrefix.length()) {
 
                         int idxChallengeEnd = requestStr.indexOf("\\", idxChallengeStart);
 
                         if (idxChallengeEnd > idxChallengeStart) {
 
                             String challengeReturned = requestStr.substring(idxChallengeStart, idxChallengeEnd);
+                            Integer parsedChallenge = Integer.reverseBytes(Integer.parseInt(challengeReturned));
 
-                            if (lastChallenges.contains(challengeReturned)) {
+                            if (lastChallenges.contains(parsedChallenge)) {
                                 byte[] address = packet.getAddress().getAddress();
                                 int remotePort = packet.getPort();
 
