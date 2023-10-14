@@ -23,7 +23,11 @@ Put into the file:
 }
 ```
 
-135.125.202.170 is the IP of my own hosted master server but you can replace/add any other host.
+135.125.202.170 is the IP of my own hosted master server, but you can replace/add any other host.
+
+This is how it should look:
+<img src="./masterServerDM.JPG" alt="Screenshot of the ingame master server query results.">
+
 
 # How to add my IP to a Master Server
 Dedicated servers have config files which you can update with the master server IP.
