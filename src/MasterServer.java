@@ -1,19 +1,16 @@
 import java.io.File;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.InputStream;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
-public class Main {
+public class MasterServer {
+
+    private static final String IP_LIST_URL = "https://codeberg.org/elko/dm_server/raw/commit/b739f8a149b40dd79b6ae04ceab908687fe42998/gameServerIpsForMasterServer.txt";
 
     public static void main(String[] args) throws Exception {
-
-        //testByteToString();
 
         ByteBuffer ips = ByteBuffer.allocate(1048576 * 5); // 5mb
 
@@ -39,7 +36,7 @@ public class Main {
 
         System.out.println("Start listening at port " + port + " host: " + inetAddress.toString());
 
-        while(true) {
+        while (true) {
             byte[] buf = new byte[256];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             socket.receive(packet);
@@ -125,19 +122,29 @@ public class Main {
         // fixed header
         ips.put(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x66, (byte) 0x0A });
 
-        File file = new File("./ips.txt");
-        if (!file.exists()) {
-            file.createNewFile();
-        } else if (file.length() > 0) {
-            List<String> ipList = Files.readAllLines(file.toPath());
+        List<String> ipList = new ArrayList<>();
 
-            ipList.stream()
-                    .filter(ip -> ip != null && !ip.trim().isBlank())
-                    .map(Main::ipToByte)
-                    .filter(Objects::nonNull)
-                    .forEach(ip -> ips.put(toPrimitives(ip)));
+        String remoteIps = loadRemoteIps();
+
+        if (remoteIps != null) {
+            ipList = Arrays.stream(remoteIps.split("\n")).toList();
+        } else {
+            System.out.println("Fallback to local ips.txt file");
+            File file = new File("./ips.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            } else if (file.length() > 0) {
+                ipList = Files.readAllLines(file.toPath());
+            }
         }
 
+        System.out.println("IPs loaded: " + ipList.size());
+
+        ipList.stream()
+                .filter(ip -> ip != null && !ip.isBlank())
+                .map(MasterServer::ipToByte)
+                .filter(Objects::nonNull)
+                .forEach(ip -> ips.put(toPrimitives(ip)));
     }
 
 
@@ -178,16 +185,21 @@ public class Main {
         return bytes;
     }
 
-    static void testByteToString() {
-        byte[] data = new byte[] {0x30, 0x0a, 0x5c, 0x70, 0x72, 0x6f};
-        System.out.println(new String(data, StandardCharsets.US_ASCII));
+    private static String loadRemoteIps() {
+        System.out.println("Loading remote ips from " + IP_LIST_URL);
+
+        try (InputStream remoteIps = new URI(IP_LIST_URL).toURL().openStream()) {
+            String ips = new String(remoteIps.readAllBytes());
+
+            if (ips.isBlank()) return null;
+
+            return ips.trim();
+
+        } catch (Exception e) {
+            System.err.println("Failed to get remote IP list: " + e.getMessage());
+        }
+
+        return null;
     }
 
-    static void testIpToByte() {
-        byte[] expectedResult = new byte[] {45, (byte) 141, 0, (byte) 252,  0x69, (byte) 0x88};
-        byte[] actual = toPrimitives(ipToByte("45.141.0.252:27016"));
-        System.out.println("Equal: " + Arrays.equals(expectedResult, actual));
-        System.out.println("Expected: " + Arrays.toString(expectedResult));
-        System.out.println("Actual: " + Arrays.toString(actual));
-    }
 }
