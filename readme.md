@@ -7,7 +7,7 @@ In addition to the configured IPs, game servers can add their IP.
 Any game server is supported as long as it implements the Master Server Query Protocol. Usually older Source games like Dark Messiah of Might and Magic.
 
 
-# How to use a MasterServer
+# How to use a Master Server
 To configure any master server to find game servers, overwrite the .../Steam/config/masterservers.vdf file and make it read only (right click, Properties).
 Put into the file:
 ```
@@ -25,7 +25,7 @@ Put into the file:
 
 135.125.202.170 is the IP of my own hosted master server but you can replace/add any other host.
 
-# How to add my IP to a MasterServer
+# How to add my IP to a Master Server
 Dedicated servers have config files which you can update with the master server IP.
 
 Or you can use this console command which also works with servers started from within the game:
@@ -33,7 +33,7 @@ setmaster add 135.125.202.170:27010
 
 You should be able to see your game server immediately after executing this command and refreshing the 'Internet' tab.
 
-# How to host
+# How to host this Master Server
 Very simple by design. Just one file that can be started the usual Java way:
 java MasterServer
 
