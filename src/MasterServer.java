@@ -8,7 +8,7 @@ import java.util.*;
 
 public class MasterServer {
 
-    private static final String IP_LIST_URL = "https://codeberg.org/elko/dm_server/raw/commit/b739f8a149b40dd79b6ae04ceab908687fe42998/gameServerIpsForMasterServer.txt";
+    private static final String IP_LIST_URL = "https://codeberg.org/xelot/dm_server/raw/commit/ed245b01f432048bb636dcb1d2d85cd0003ed7d2/gameServerIpsForMasterServer.txt";
 
     public static void main(String[] args) throws Exception {
 
