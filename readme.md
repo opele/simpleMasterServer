@@ -33,7 +33,8 @@ This is how it should look:
 Dedicated servers have config files which you can update with the master server IP.
 
 Or you can use this console command which also works with servers started from within the game:
-setmaster add 135.125.202.170:27010
+
+`setmaster add 135.125.202.170:27010`
 
 You should be able to see your game server immediately after executing this command and refreshing the 'Internet' tab.
 
@@ -44,10 +45,21 @@ java MasterServer
 You have to install Java (version 21) first.
 
 By default, it uses localhost, but you may need to provide the public or local IP depending on your setup.
-I run this on a Private Virtual Server (VPS) and start it with:
-nohup java MasterServer 135.125.202.170 > server.log &
+I run this on a Private Virtual Server (VPS) and start it from terminal with:
+
+`nohup java MasterServer 135.125.202.170 > server.log &`
 
 The server port is the standard 27010.
+
+To use the restart script with cron:
+```
+chmod +rwx start.sh
+chmod +rwx stop.sh
+chmod +rwx restart.sh
+crontab -e
+* 4 * * * /opt/msqp/restart.sh
+```
+Assuming you have copied the ips.txt and MasterServer class into /opt/msqp
 
 
 # Troubleshooting
