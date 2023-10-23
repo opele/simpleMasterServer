@@ -59,7 +59,7 @@ chmod +rwx restart.sh
 crontab -e
 0 4 * * * /opt/msqp/restart.sh
 ```
-Assuming you have copied the ips.txt and MasterServer class into /opt/msqp
+Assuming you have copied the MasterServer class into /opt/msqp
 
 
 # Troubleshooting
