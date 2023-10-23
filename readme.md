@@ -57,7 +57,7 @@ chmod +rwx start.sh
 chmod +rwx stop.sh
 chmod +rwx restart.sh
 crontab -e
-* 4 * * * /opt/msqp/restart.sh
+0 4 * * * /opt/msqp/restart.sh
 ```
 Assuming you have copied the ips.txt and MasterServer class into /opt/msqp
 
